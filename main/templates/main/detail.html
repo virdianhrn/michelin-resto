@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+<title>Detail Michelin Restaurant</title>
+{% endblock meta %}
+
+{% block content %}
+<div class="container" style="margin: 0; position: absolute; top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%);">
+    <div class="card" style="margin: 20%; color: #bd2333; background-color: #ffffff; border-color: #bd2333;">
+        <div class="card-body">
+          <h5 class="card-title" style="text-align: center; font-weight: bolder; font-size: x-large;">{{ name }}</h5>
+          <div style="width: 50%; margin: 0 auto;">
+            {% if star == 1 %}
+            <img src="{% static 'img/michelin star.svg' %}" alt="star" height="20" width="20"> <span> - One Star Restaurant</span>
+            {% elif  star == 2 %}
+            <img src="{% static 'img/michelin star.svg' %}" alt="star" height="20" width="20">
+            <img src="{% static 'img/michelin star.svg' %}" alt="star" height="20" width="20"> <span> - Two Star Restaurant</span>
+            {% else %}
+            <img src="{% static 'img/michelin star.svg' %}" alt="star" height="20" width="20">
+            <img src="{% static 'img/michelin star.svg' %}" alt="star" height="20" width="20">
+            <img src="{% static 'img/michelin star.svg' %}" alt="star" height="20" width="20"> <span> - Three Star Restaurant</span>
+            {% endif %}
+          </div><br>
+          <table style="width:100%">
+          <tr> <td style="width:30%"> Type of Cuisine </td> <td> : {{ cuisine }}</td> </tr>
+          <tr> <td style="width:30%"> Price  </td> <td> : {{ price }}</td> </tr>
+          <tr> <td style="width:30%"> Awarded Year  </td> <td> : {{ year }}</td> </tr>
+          <tr> <td style="width:30%"> Location  </td> <td> : {{ city }}, {{ region }}, {{ zipcode }}  ({{ latitude }}, {{ longitude }}) </td> </tr>
+          <tr> <td style="width:30%"> Awarded Year  </td> <td> : {{ year }}</td> </tr>
+        </table>
+        <br>
+        <a href="{{ url }}" class="btn btn-primary" style="background-color: #bd2333;"> See more in Michelin Guide </a>
+        </div>
+    </div>
+</div>
+{% endblock content %}
