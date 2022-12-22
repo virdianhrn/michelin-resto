@@ -1,4 +1,7 @@
 from django.shortcuts import render
+import rdflib
+from main.query import getDetailOfRestaurant, getRestaurantByName, queryClassifier
+from django.http import HttpResponseRedirect
 
 # Create your views here.
 def home(request):
@@ -12,19 +15,24 @@ def search(request):
     context = {'results' : list_result, 'query' : query}
     return render(request, 'main/result.html', context=context)
 
-def detail(request):
+def detail(request, id):
+    uri = rdflib.URIRef("http://www.semanticweb.org/stern/ontologies/2022/10/michelin-restaurant#"+id)
+    restaurant_detail = getDetailOfRestaurant(uri)
     context = {
-        'name' : 'Alinea',
-        'star' : 3,
-        'year' : 2019,
-        'longitude' : '-87.64798',
-        'latitude' : '41.91328',
-        'city' : 'Chicago',
-        'region' : 'Chicago',
-        'zipcode' : '60614',
-        'cuisine' : 'Contemporary',
-        'price' : '$$$',
-        'url' : 'https://guide.michelin.com/us/en/illinois/chicago/restaurant/alinea'
+        'name' : restaurant_detail.name,
+        'starRating' : restaurant_detail.starRating,
+        'awardedYear' : restaurant_detail.awardedYear,
+        'longitude' : restaurant_detail.longitude,
+        'latitude' : restaurant_detail.latitude,
+        'city' : restaurant_detail.city ,
+        'region' : restaurant_detail.region,
+        'zipcode' : restaurant_detail.zipcode if isinstance(restaurant_detail.zipcode, int) else " ",
+        'cuisine' : restaurant_detail.cuisine if restaurant_detail.cuisine != None else "N/A",
+        'price' : restaurant_detail.priceRange if restaurant_detail.priceRange != None else "N/A",
+        'url' : restaurant_detail.url,
+        'wikidataLink' : str(restaurant_detail.wikidataLink) if restaurant_detail.wikidataLink != None else "N/A",
+        'director' : restaurant_detail.director if restaurant_detail.director != None else "N/A",
+        'maxCapacity' : restaurant_detail.maxCapacity if restaurant_detail.maxCapacity != None else "N/A",
     }
 
     return render(request, 'main/detail.html', context=context)
