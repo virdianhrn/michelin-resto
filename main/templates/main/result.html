@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+<title>Search Result </title>
+{% endblock meta %}
+
+{% block content %}
+<h3 style="text-align: center; margin-top: 50px; margin-bottom: 30px; font-weight: bold;"> Search Results for <span style="font-style: italic;"> {{ query }} </span> </h3>
+
+{% for result in results %}
+<div class="card mx-auto" style="width: 18rem; margin-bottom: 8px; border-color: #bd2333;">
+    <div class="card-body" style="padding: 15px;">
+        <img src="{% static 'img/michelin star.svg' %}" alt="star" height="20" width="20">
+       <span>  <a href="/detail/{{ result.id }}" style="color: black;"> {{ result.name }} </a> </span>
+    </div>
+</div>
+{% endfor %}
+{% endblock content %}

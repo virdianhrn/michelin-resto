@@ -4,6 +4,14 @@ from django.shortcuts import render
 def home(request):
     return render(request, 'main/home.html')
 
+def search(request):
+    list_result = []
+    list_result.append({ 'id' : 'id1' , 'name' : 'Alinea '})
+    list_result.append({ 'id' : 'id2' , 'name' : 'Alinea 2'})
+    query = 'expensive 3-star restaurants'
+    context = {'results' : list_result, 'query' : query}
+    return render(request, 'main/result.html', context=context)
+
 def detail(request):
     context = {
         'name' : 'Alinea',
