@@ -2,6 +2,11 @@ import rdflib
 from collections import namedtuple
 
 g = rdflib.Graph()
+Restaurant = namedtuple("Restaurant", 
+    """
+    id name region
+    """
+  )
 
 def extractParams(query):
   query = query.lower()
@@ -50,14 +55,18 @@ def getRestaurantByName(name):
             ex:locatedInRegion/rdfs:label ?region ;
       }
   """
-  query_restaurant_by_name += f"FILTER (lcase(?label) = '{name.lower()}')"
+  query_restaurant_by_name += f'FILTER (lcase(?label) = "{name.lower()}")'
   query_restaurant_by_name += "}"
 
   qres = g.query(query_restaurant_by_name)
   
+  restaurants = []
   for row in qres:
-    restaurant, name, region = row
-  return (restaurant, name, region)
+      restaurantId = extractIdFromURI(row.restaurant)
+      restaurantName = autoconvert(row.label)
+      restaurantRegion = autoconvert(row.region)
+      restaurants.append(Restaurant(restaurantId, restaurantName, restaurantRegion))
+  return restaurants
 
 
 
@@ -71,17 +80,17 @@ def starRatingFilterQuery(starRating):
 
 def cuisineFilterQuery(cuisine):
   query = f'ex:hasCuisine/rdfs:label ?cuisine ;'
-  query_filter = f"FILTER (lcase(?cuisine) = '{cuisine.lower()}')"
+  query_filter = f'FILTER (lcase(?cuisine) = "{cuisine.lower()}")'
   return query, query_filter
 
 def cityFilterQuery(city):
   query = f'ex:locatedInCity/rdfs:label ?city ;'
-  query_filter = f"FILTER (lcase(?city) = '{city.lower()}')"
+  query_filter = f'FILTER (lcase(?city) = "{city.lower()}")'
   return query, query_filter
 
 def regionFilterQuery(region):
   query = ''
-  query_filter = f"FILTER (lcase(?region) = '{region.lower()}')"
+  query_filter = f'FILTER (lcase(?region) = "{region.lower()}")'
   return query, query_filter
 
 
@@ -123,7 +132,10 @@ def getRestaurantsByParams(params):
   qres = g.query(query_restaurants_by_param)
   restaurants = []
   for row in qres:
-      restaurants.append((row.restaurant, str(row.label), str(row.region)))
+      restaurantId = extractIdFromURI(row.restaurant)
+      restaurantName = autoconvert(row.label)
+      restaurantRegion = autoconvert(row.region)
+      restaurants.append(Restaurant(restaurantId, restaurantName, restaurantRegion))
   return restaurants
 
 
@@ -180,6 +192,9 @@ def autoconvert(s):
         except ValueError:
             pass
     return s
+
+def extractIdFromURI(uri):
+  return uri.split('#')[1]
 
 def extractLiteralFromQuery(query, uri):
   qres = g.query(query, initBindings={'restaurant' : uri})
@@ -266,7 +281,7 @@ def getDetailOfRestaurant(uri):
   priceRange = extractLiteralFromQuery(priceRange_query, uri)
   
   wikidataLink, director, directorName, maxCapacity = getDetailsFromWikidata(name)
-
+  
   detail = DetailRestaurant(name, awardedYear, cuisine, latitude,  
          longitude, city, region, starRating, url, zipCode, priceRange,
          wikidataLink, director, directorName, maxCapacity)
@@ -274,19 +289,9 @@ def getDetailOfRestaurant(uri):
   return detail
 
 
-def queryClassifier(query):
+def queryProcessor(query):
   query = query.lower()
   if 'restaurants' in query:
     return getRestaurantsByParams(query)
   else:
     return getRestaurantByName(query)
-
-
-res = queryClassifier('The French Laundry')
-# print(queryClassifier('NoMad'))
-# res = queryClassifier('affordable 1-star french contemporary restaurants in taipei region')
-# print(getDetailOfRestaurant(res[0][0]))
-# print(queryClassifier('expensive contemporary restaurants in new york'))
-
-print(getDetailOfRestaurant(res[0]))
-# print(getDetailOfRestaurant('NoMad'))

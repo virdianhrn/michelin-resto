@@ -6,6 +6,6 @@ app_name = 'main'
 
 urlpatterns = [
     path('', views.home, name='home'),
-    path('search/', views.search, name='search'),
+    path('search/<str:query>', views.search, name='search'),
     path('detail/<str:id>', views.detail, name='detail'),
 ]

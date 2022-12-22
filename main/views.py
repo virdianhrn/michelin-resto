@@ -1,17 +1,22 @@
 from django.shortcuts import render
 import rdflib
-from main.query import getDetailOfRestaurant, getRestaurantByName, queryClassifier
+from main.forms import QueryForm
+from main.query import getDetailOfRestaurant, queryProcessor
+from django.shortcuts import redirect
 from django.http import HttpResponseRedirect
 
 # Create your views here.
 def home(request):
-    return render(request, 'main/home.html')
+    print(request.GET)
+    form = QueryForm(request.GET or None)
+    if form.is_valid() and request.method == 'GET':
+        query = form.cleaned_data['query']
+        return redirect('main:search', query=query)
+    context={'form':form}
+    return render(request, 'main/home.html', context=context)
 
-def search(request):
-    list_result = []
-    list_result.append({ 'id' : 'id1' , 'name' : 'Alinea '})
-    list_result.append({ 'id' : 'id2' , 'name' : 'Alinea 2'})
-    query = 'expensive 3-star restaurants'
+def search(request, query):
+    list_result = queryProcessor(query)
     context = {'results' : list_result, 'query' : query}
     return render(request, 'main/result.html', context=context)
 
@@ -24,9 +29,9 @@ def detail(request, id):
         'awardedYear' : restaurant_detail.awardedYear,
         'longitude' : restaurant_detail.longitude,
         'latitude' : restaurant_detail.latitude,
-        'city' : restaurant_detail.city ,
+        'city' : restaurant_detail.city if restaurant_detail.city != None else "N/A",
         'region' : restaurant_detail.region,
-        'zipcode' : restaurant_detail.zipcode if isinstance(restaurant_detail.zipcode, int) else " ",
+        'zipcode' : restaurant_detail.zipcode if restaurant_detail.zipcode != None else " ",
         'cuisine' : restaurant_detail.cuisine if restaurant_detail.cuisine != None else "N/A",
         'price' : restaurant_detail.priceRange if restaurant_detail.priceRange != None else "N/A",
         'url' : restaurant_detail.url,

@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+<title>Search Page</title>
+{% endblock meta %}
+
+{% block content %}
+<br>
+<br>
+<br>
+<div class="container">
+    <form method="GET" action="/">
+        <div class="input-group mb-3">
+            <input type="text" id="query" name='query' class="form-control" placeholder="Search here...">
+            <div class="input-group-append">
+                <button type="submit" class="btn btn-primary" style="background-color: #bd2333">Search</button>
+            </div>
+        </div>
+    </form>
+</div>
+<br>
+{% endblock content %}
