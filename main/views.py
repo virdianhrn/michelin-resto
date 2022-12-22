@@ -32,6 +32,7 @@ def detail(request, id):
         'url' : restaurant_detail.url,
         'wikidataLink' : str(restaurant_detail.wikidataLink) if restaurant_detail.wikidataLink != None else "N/A",
         'director' : restaurant_detail.director if restaurant_detail.director != None else "N/A",
+        'directorName' : restaurant_detail.directorName if restaurant_detail.directorName != None else "N/A",
         'maxCapacity' : restaurant_detail.maxCapacity if restaurant_detail.maxCapacity != None else "N/A",
     }
 

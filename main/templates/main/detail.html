@@ -27,8 +27,8 @@
           <tr> <td style="width:30%"> Price  </td> <td> : {{ price }}</td> </tr>
           <tr> <td style="width:30%"> Awarded Year  </td> <td> : {{ awardedYear }}</td> </tr>
           <tr> <td style="width:30%"> Location  </td> <td> : {{ city }}, {{ region }}, {{ zipcode }}  ({{ latitude }}, {{ longitude }}) </td> </tr>
-          {% if director != "N/A" %} <tr> <td style="width:30%"> Director  </td> <td> : <a href="{{ director }} "  style="color:black;"> {{ director }}</a></td> </tr> {% endif %}
-          {% if maxCapacity != "N/A" %} <tr> <td style="width:30%"> Max Capacity  </td> <td> :  {{ maxCapacity }}</td> </tr> {% endif %}
+          {% if director != "N/A" %} <tr> <td style="width:30%"> Director  </td> <td> : <a href="{{ director }} "  style="color:black;"> {{ directorName }}</a></td> </tr> {% endif %}
+          {% if maxCapacity != "N/A" %} <tr> <td style="width:30%"> Max Capacity  </td> <td> :  {{ maxCapacity }} seat </td> </tr> {% endif %}
         </table>
         <br>
         <a href="{{ url }}" class="btn btn-primary" style="background-color: #bd2333"> See more in Michelin Guide </a>

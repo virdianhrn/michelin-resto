@@ -194,12 +194,14 @@ def getDetailsFromWikidata(name):
   PREFIX wd: <http://www.wikidata.org/entity/>
   PREFIX wdt: <http://www.wikidata.org/prop/direct/>
 
-  SELECT DISTINCT ?restaurant ?director ?maxCapacity WHERE{  
+  SELECT DISTINCT ?restaurant ?director ?maxCapacity ?directorName WHERE{  
     SERVICE <https://query.wikidata.org/sparql> {
       ?restaurant ?label ?restaurantName;  
         wdt:P31 wd:Q11707 .
       OPTIONAL {
-        ?restaurant wdt:P1037 ?director
+        ?restaurant wdt:P1037 ?director .
+        ?director rdfs:label ?directorName .
+        FILTER (langMatches( lang(?directorName), "EN" ) )
       }
       OPTIONAL {
         ?restaurant wdt:P1083 ?maxCapacity
@@ -214,19 +216,20 @@ def getDetailsFromWikidata(name):
                   'restaurantName': rdflib.Literal(name, lang='en')
                 })
 
-  restaurant, director, maxCapacity = None, None, None
+  restaurant, director, directorName, maxCapacity = None, None, None, None
   for row in qres:
       restaurant = row.restaurant
       director = row.director
-      maxCapacity = int(row.maxCapacity) if maxCapacity is not None else None
-  return restaurant, director, maxCapacity
+      directorName = autoconvert(row.directorName)
+      maxCapacity = autoconvert(row.maxCapacity)
+  return restaurant, director, directorName, maxCapacity
 
 
 def getDetailOfRestaurant(uri):
   DetailRestaurant = namedtuple("DetailRestaurant", 
     """
     name awardedYear cuisine latitude longitude city region starRating 
-    url zipcode priceRange wikidataLink director maxCapacity
+    url zipcode priceRange wikidataLink director directorName maxCapacity
     """
   )
   name_query = nameOptionalQuery()
@@ -262,11 +265,11 @@ def getDetailOfRestaurant(uri):
   priceRange_query = priceRangeOptionalQuery()
   priceRange = extractLiteralFromQuery(priceRange_query, uri)
   
-  wikidataLink, director, maxCapacity = getDetailsFromWikidata(name)
+  wikidataLink, director, directorName, maxCapacity = getDetailsFromWikidata(name)
 
   detail = DetailRestaurant(name, awardedYear, cuisine, latitude,  
          longitude, city, region, starRating, url, zipCode, priceRange,
-         wikidataLink, director, maxCapacity)
+         wikidataLink, director, directorName, maxCapacity)
 
   return detail
 
@@ -279,12 +282,11 @@ def queryClassifier(query):
     return getRestaurantByName(query)
 
 
-# print(queryClassifier('Kilian Stuba'))
+res = queryClassifier('The French Laundry')
 # print(queryClassifier('NoMad'))
 # res = queryClassifier('affordable 1-star french contemporary restaurants in taipei region')
-# print(res[0])
 # print(getDetailOfRestaurant(res[0][0]))
 # print(queryClassifier('expensive contemporary restaurants in new york'))
 
-# print(getDetailOfRestaurant('Kilian Stuba'))
+print(getDetailOfRestaurant(res[0]))
 # print(getDetailOfRestaurant('NoMad'))
